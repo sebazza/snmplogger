@@ -1,0 +1,7 @@
+
+
+To generate the MIB2SCHEMA file used to provide the string translations for the oids use the following command:
+
+    snmptranslate -On -Tz -M mibs:/usr/share/snmp/mibs -m ALL  > snmp-oids.txt
+
+
