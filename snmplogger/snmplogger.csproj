@@ -6,7 +6,7 @@
     <ProjectGuid>{7B03B6C5-A289-40D7-972F-68137109E4CC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>snmplogger</RootNamespace>
-    <AssemblyName>snmptrapper</AssemblyName>
+    <AssemblyName>snmplogger</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -38,6 +38,9 @@
       <HintPath>..\..\packetnet\PacketDotNet\bin\Release\PacketDotNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.Options">
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -49,12 +52,13 @@
     <Compile Include="Oid.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Identifier.cs" />
+    <Compile Include="Sniffer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="snmp-oids.txt" />
     <EmbeddedResource Include="SharpPcap.dll" />
     <EmbeddedResource Include="PacketDotNet.dll" />
     <EmbeddedResource Include="SharpPcap.dll.config" />
+    <EmbeddedResource Include="snmp-oids.txt.gz" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

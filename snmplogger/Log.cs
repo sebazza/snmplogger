@@ -7,10 +7,10 @@ namespace snmplogger
 {
 	public class Log
 	{
-		protected static string application_log_stem = "snmptrapper";
+		protected static string application_log_stem = "snmplogger";
 		protected static string logfile_stem = "traps";
 		protected static string log_extension = ".log";
-		protected static int depth_of_rotation = 1;
+		protected static int depth_of_rotation = 5;
 
 
 		private Log()
@@ -76,26 +76,29 @@ namespace snmplogger
 
 
 
-
+        // Rotates each log file daily.
 		public static void Rotate()
 		{
-            Console.WriteLine("Rotate");
 			string[] files = Directory.GetFiles(Directory.GetCurrentDirectory(),
 			                                    logfile_stem + ".*",
 			                                    SearchOption.TopDirectoryOnly);
-			foreach (string path in files)
+
+            // Only consider the current log files.
+            string[] current_log_files = Array.FindAll(files, x => x.EndsWith(log_extension));
+
+            foreach (string path in current_log_files)
 			{
 				DateTime file_date = File.GetCreationTime(path);
-                Console.WriteLine("Check {0}: {1}", path, file_date);
 				if (file_date.CompareTo(DateTime.Today) < 0)
 				{
-					RotateFile(path);
+					RotateFiles(path);
 				}
 			}
 		}
 
 
-		protected static void RotateFile(string path)
+        // Detele or increment log file
+		protected static void BumpFile(string path)
 		{
 			int index;
 			string ext = Path.GetExtension(path).TrimStart(new Char[] { '.' });
@@ -107,14 +110,34 @@ namespace snmplogger
 				}
 				else
 				{
-                    File.Move(path, IncrementFileIndex(path));
+                    //
+                    if (File.Exists(path))
+                    {
+                        string bump_file = IncrementFileSuffix(path);
+                        File.Delete(bump_file);
+                        File.Move(path, bump_file);
+                    }
 				}
 			}
 		}
 
 
+        // Rotate all log files.
+        protected static void RotateFiles(string path)
+        {
+            // Start with highest suffixed archived file.
+            for (int i = depth_of_rotation; i >= 0; i--)
+            {
+                BumpFile(path + "." + i.ToString());
+            }
+            // Finally treat the current log file.
+            BumpFile(path);
+        }
 
-		protected static string IncrementFileIndex(string path)
+
+        // Increments the numerical filename extenstion. Add "0" if no
+        // numerical extension is found.
+		protected static string IncrementFileSuffix(string path)
 		{
 			string new_path;
 			int index;
